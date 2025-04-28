@@ -43,6 +43,9 @@ export const updateTodo = async (req, res) => {
 export const deleteTodo = async (req, res) => {
     try {
       const todo = await Todo.findByIdAndDelete(req.params.id);
+      if(!todo){
+        return res.starus(404).jsosn({message:"todo not found"});
+      }
       res.status(201).json({ message: "todo deleted successfully" });
     } catch (error) {
       console.log(error);
