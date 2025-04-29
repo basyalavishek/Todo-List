@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function Home() {
   const [todos, setTodos] = useState([]);
@@ -39,7 +41,7 @@ function Home() {
     try {
       const response = await axios.post(
         "http://localhost:4001/todo/create",
-        { text: newTodo, completed: false }, // while crating todo in our schema we have designed text and completed so , in text , newTodo will be assigned and initially completed is false
+        { text: newTodo, completed: false }, // while creating todo in our schema we have designed text and completed so , in text , newTodo will be assigned and initially completed is false
         {
           withCredentials: true,
         }
@@ -80,6 +82,20 @@ function Home() {
       setTodos(todos.filter((t) => t._id !== id));
     } catch (error) {
       setError("Failed to Delete Todo");
+    }
+  };
+
+  const navigateTo = useNavigate();
+  const logout = async () => {
+    try {
+      await axios.get("http://localhost:4001/user/logout" , {
+        withCredentials:true
+      });
+      toast.success("User logged out successfully");
+      navigateTo("/login")
+      localStorage.removeItem("jwt");
+    } catch (error) {
+      toast.error("Error logging out");
     }
   };
 
@@ -151,7 +167,10 @@ function Home() {
       <p className="mt-4 text-center text-sm text-gray-700">
         {remainingTodos} remaining todos
       </p>
-      <button className="mt-6 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-800 duration-300ms mx-auto block">
+      <button
+        onClick={() => logout()}
+        className="mt-6 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-800 duration-300ms mx-auto block"
+      >
         Logout
       </button>
     </div>

@@ -27,7 +27,7 @@ export const register = async (req, res) => {
 
     // If user doesn't give any fields
     if (!email || !username || !password) {
-      return res.status(400).json({ messaage: "All field are required" });
+      return res.status(400).json({ errors: "All field are required" });
     }
 
     // If user provide all the fields
@@ -44,7 +44,7 @@ export const register = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ message: "user already registered" });
+      return res.status(400).json({ errors: "user already registered" });
     }
 
     // we have to hash password just before sending to database
@@ -54,46 +54,46 @@ export const register = async (req, res) => {
     await newUser.save();
 
     if (newUser) {
-     const token = await generateTokenAndSaveInCookies(newUser._id,res);
+      const token = await generateTokenAndSaveInCookies(newUser._id, res);
 
       res
         .status(201)
-        .json({ message: "User registered Successfully", newUser ,token });
+        .json({ message: "User registered Successfully", newUser, token });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "error in user registration" });
+    res.status(500).json({ errors: "error in user registration" });
   }
 };
 
 export const login = async (req, res) => {
-  const {email , password } = req.body;
+  const { email, password } = req.body;
   try {
     if (!email || !password) {
-      return res.status(400).json({ message: "All credentials are required" });
+      return res.status(400).json({ errors: "All credentials are required" });
     }
     const user = await User.findOne({ email }).select("+password");
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       // comparing database password and password from body
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ errors: "Invalid email or password" });
     }
-    const token = await generateTokenAndSaveInCookies(user._id,res);
-    res.status(200).json({message:"User logged in successfully",user})
+    const token = await generateTokenAndSaveInCookies(user._id, res);
+    res.status(200).json({ message: "User logged in successfully", user });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "error logging user" });
+    res.status(500).json({ errors: "error logging user" });
   }
 };
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("jwt",{
-      path:"/"
-    })
-    res.status(200).json({message:"user logged out successfully"})
+    res.clearCookie("jwt", {
+      path: "/",
+    });
+    res.status(200).json({ message: "user logged out successfully" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "error logging out user" });
+    res.status(500).json({ errors: "error logging out user" });
   }
 };

@@ -4,6 +4,7 @@ import { connectDB } from "./config/db_connect.js";
 import todoRoute from "./routes/todo.route.js";
 import userRoute from "./routes/user.route.js";
 import cors from "cors"
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 4001;
 
 // middlewares
 app.use(express.json()); // allows us to accept JSON data in the req.body
+app.use(cookieParser());
 app.use(cors({
 origin:process.env.FRONTEND_URL, // from this frontend_url your frontend talks to your backend
 credentials:true,
